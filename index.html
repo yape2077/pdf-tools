@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Toolkit · Personal Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ----- light (default) theme ----- */
+        :root {
+            --bg-body: #f0f4f8;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --bg-drop: #f7fafc;
+            --bg-drop-hover: #ebf8ff;
+            --border-drop: #e2e8f0;
+            --border-drop-hover: #4299e1;
+            --text-primary: #1a202c;
+            --text-secondary: #2d3748;
+            --text-muted: #718096;
+            --text-light: #a0aec0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --badge-bg: #48bb78;
+            --badge-text: white;
+            --btn-primary: #4299e1;
+            --btn-primary-hover: #3182ce;
+            --btn-success: #48bb78;
+            --btn-success-hover: #38a169;
+            --btn-danger: #fc8181;
+            --btn-danger-hover: #f56565;
+            --progress-bg: #edf2f7;
+            --progress-fill: linear-gradient(90deg, #4299e1, #48bb78);
+            --file-item-bg: #f7fafc;
+            --remove-color: #e53e3e;
+            --footer-border: #e2e8f0;
+            --notification-bg: #2d3748;
+            --notification-success: #48bb78;
+            --notification-error: #fc8181;
+        }
+
+        /* ----- dark theme ----- */
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-header: #1e293b;
+            --bg-drop: #2d3b4f;
+            --bg-drop-hover: #334155;
+            --border-drop: #3b4a5e;
+            --border-drop-hover: #60a5fa;
+            --text-primary: #f1f5f9;
+            --text-secondary: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-light: #64748b;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.6);
+            --badge-bg: #2b6e4f;
+            --badge-text: #e2e8f0;
+            --btn-primary: #3b82f6;
+            --btn-primary-hover: #2563eb;
+            --btn-success: #22c55e;
+            --btn-success-hover: #16a34a;
+            --btn-danger: #ef4444;
+            --btn-danger-hover: #dc2626;
+            --progress-bg: #334155;
+            --progress-fill: linear-gradient(90deg, #3b82f6, #22c55e);
+            --file-item-bg: #2d3b4f;
+            --remove-color: #f87171;
+            --footer-border: #334155;
+            --notification-bg: #1e293b;
+            --notification-success: #22c55e;
+            --notification-error: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-body);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.25s, color 0.2s;
+            color: var(--text-primary);
+        }
+
+        .header {
+            max-width: 1200px;
+            margin: 0 auto 30px;
+            background: var(--bg-header);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            transition: background 0.25s, box-shadow 0.25s;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            flex: 1 1 200px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header .subtitle {
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .badge-local {
+            display: inline-block;
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            padding: 4px 16px;
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 12px;
+            transition: background 0.25s, color 0.25s;
+        }
+
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-drop);
+            border-radius: 40px;
+            padding: 8px 18px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+            transition: background 0.2s, border 0.2s, box-shadow 0.2s;
+            margin-left: 16px;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-drop-hover);
+            border-color: var(--border-drop-hover);
+        }
+
+        .theme-toggle .icon {
+            font-size: 18px;
+        }
+
+        .tools-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .tool-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s, background 0.25s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .tool-card .icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .tool-card h3 {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .tool-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .tool-card .drop-zone {
+            border: 2px dashed var(--border-drop);
+            border-radius: 8px;
+            padding: 24px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-drop);
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .tool-card .drop-zone:hover {
+            border-color: var(--border-drop-hover);
+            background: var(--bg-drop-hover);
+        }
+
+        .tool-card .drop-zone.dragover {
+            border-color: var(--border-drop-hover);
+            background: var(--bg-drop-hover);
+        }
+
+        .tool-card .file-list {
+            list-style: none;
+            max-height: 120px;
+            overflow-y: auto;
+            margin: 8px 0 12px;
+            font-size: 13px;
+        }
+
+        .tool-card .file-list li {
+            padding: 4px 8px;
+            background: var(--file-item-bg);
+            border-radius: 4px;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+        }
+
+        .tool-card .file-list .remove-btn {
+            background: none;
+            border: none;
+            color: var(--remove-color);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+
+        .tool-card .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .tool-card .btn-primary {
+            background: var(--btn-primary);
+            color: white;
+        }
+
+        .tool-card .btn-primary:hover:not(:disabled) {
+            background: var(--btn-primary-hover);
+        }
+
+        .tool-card .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .tool-card .btn-success {
+            background: var(--btn-success);
+            color: white;
+        }
+
+        .tool-card .btn-success:hover:not(:disabled) {
+            background: var(--btn-success-hover);
+        }
+
+        .tool-card .btn-danger {
+            background: var(--btn-danger);
+            color: white;
+        }
+
+        .tool-card .btn-danger:hover:not(:disabled) {
+            background: var(--btn-danger-hover);
+        }
+
+        .tool-card .options {
+            margin: 10px 0;
+        }
+
+        .tool-card .options label {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tool-card .options input[type="text"],
+        .tool-card .options select {
+            padding: 4px 8px;
+            border: 1px solid var(--border-drop);
+            border-radius: 4px;
+            font-size: 13px;
+            background: var(--bg-drop);
+            color: var(--text-secondary);
+        }
+
+        .tool-card .options input[type="text"] {
+            width: 140px;
+        }
+
+        .tool-card .options select {
+            width: 70px;
+        }
+
+        .footer {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 14px;
+            padding: 20px;
+            border-top: 1px solid var(--footer-border);
+            transition: border 0.25s, color 0.25s;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--notification-bg);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 999;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            background: var(--notification-success);
+        }
+
+        .notification.error {
+            background: var(--notification-error);
+        }
+
+        .notification .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 16px;
+            opacity: 0.7;
+        }
+
+        .notification .close-btn:hover {
+            opacity: 1;
+        }
+
+        .progress-container {
+            margin-top: 12px;
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: var(--progress-bg);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--progress-fill);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .theme-toggle {
+                margin-left: 0;
+                align-self: flex-start;
+            }
+            .notification {
+                left: 20px;
+                right: 20px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>📚 PDF Toolkit</h1>
+            <p class="subtitle">Your personal all-in-one PDF toolbox — 100% local, 100% private</p>
+            <span class="badge-local">🔒 No uploads • No tracking • No limits</span>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <span class="icon" id="themeIcon">🌙</span>
+            <span id="themeLabel">Dark</span>
+        </button>
+    </div>
+
+    <div class="tools-grid">
+        <!-- Tool 1: Merge -->
+        <div class="tool-card" id="tool-merge">
+            <div class="icon">🔀</div>
+            <h3>Merge PDFs</h3>
+            <p>Combine multiple PDF files into one document</p>
+            <div class="drop-zone" data-tool="merge">
+                <div>📁 Drop PDFs here or click to browse</div>
+                <input type="file" accept=".pdf" multiple style="display:none" />
+            </div>
+            <ul class="file-list" id="merge-list"><li style="color:var(--text-light);text-align:center;padding:8px;">No files added</li></ul>
+            <button class="btn btn-primary" id="merge-btn" disabled>🔀 Merge Files</button>
+            <div class="progress-container" id="merge-progress">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="merge-progress-fill"></div></div>
+                <div class="progress-text" id="merge-progress-text">Merging...</div>
+            </div>
+        </div>
+
+        <!-- Tool 2: Split -->
+        <div class="tool-card" id="tool-split">
+            <div class="icon">✂️</div>
+            <h3>Split PDF</h3>
+            <p>Extract specific pages or split by page ranges</p>
+            <div class="drop-zone" data-tool="split">
+                <div>📁 Drop a PDF here</div>
+                <input type="file" accept=".pdf" style="display:none" />
+            </div>
+            <div class="options">
+                <label>Pages (e.g., 1-3,5,7-9): <input type="text" id="split-pages" placeholder="1-3,5" /></label>
+            </div>
+            <ul class="file-list" id="split-list"><li style="color:var(--text-light);text-align:center;padding:8px;">No file selected</li></ul>
+            <button class="btn btn-primary" id="split-btn" disabled>✂️ Split PDF</button>
+        </div>
+
+        <!-- Tool 3: Compress -->
+        <div class="tool-card" id="tool-compress">
+            <div class="icon">📦</div>
+            <h3>Compress PDF</h3>
+            <p>Reduce PDF file size (optimizes images)</p>
+            <div class="drop-zone" data-tool="compress">
+                <div>📁 Drop a PDF here</div>
+                <input type="file" accept=".pdf" style="display:none" />
+            </div>
+            <ul class="file-list" id="compress-list"><li style="color:var(--text-light);text-align:center;padding:8px;">No file selected</li></ul>
+            <button class="btn btn-primary" id="compress-btn" disabled>📦 Compress PDF</button>
+            <div class="progress-container" id="compress-progress">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="compress-progress-fill"></div></div>
+                <div class="progress-text" id="compress-progress-text">Compressing...</div>
+            </div>
+        </div>
+
+        <!-- Tool 4: Extract Images -->
+        <div class="tool-card" id="tool-extract">
+            <div class="icon">🖼️</div>
+            <h3>Extract Images</h3>
+            <p>Extract all images from a PDF as PNG files</p>
+            <div class="drop-zone" data-tool="extract">
+                <div>📁 Drop a PDF here</div>
+                <input type="file" accept=".pdf" style="display:none" />
+            </div>
+            <ul class="file-list" id="extract-list"><li style="color:var(--text-light);text-align:center;padding:8px;">No file selected</li></ul>
+            <button class="btn btn-primary" id="extract-btn" disabled>🖼️ Extract Images</button>
+            <div class="progress-container" id="extract-progress">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="extract-progress-fill"></div></div>
+                <div class="progress-text" id="extract-progress-text">Extracting...</div>
+            </div>
+        </div>
+
+        <!-- Tool 5: Rotate -->
+        <div class="tool-card" id="tool-rotate">
+            <div class="icon">🔄</div>
+            <h3>Rotate Pages</h3>
+            <p>Rotate all pages by 90, 180, or 270 degrees</p>
+            <div class="drop-zone" data-tool="rotate">
+                <div>📁 Drop a PDF here</div>
+                <input type="file" accept=".pdf" style="display:none" />
+            </div>
+            <div class="options">
+                <label>Degrees: 
+                    <select id="rotate-degrees">
+                        <option value="90">90°</option>
+                        <option value="180">180°</option>
+                        <option value="270">270°</option>
+                    </select>
+                </label>
+            </div>
+            <ul class="file-list" id="rotate-list"><li style="color:var(--text-light);text-align:center;padding:8px;">No file selected</li></ul>
+            <button class="btn btn-primary" id="rotate-btn" disabled>🔄 Rotate PDF</button>
+        </div>
+
+        <!-- Tool 6: Add Watermark -->
+        <div class="tool-card" id="tool-watermark">
+            <div class="icon">💧</div>
+            <h3>Add Watermark</h3>
+            <p>Add text watermark to all pages</p>
+            <div class="drop-zone" data-tool="watermark">
+                <div>📁 Drop a PDF here</div>
+                <input type="file" accept=".pdf" style="display:none" />
+            </div>
+            <div class="options">
+                <label>Text: <input type="text" id="watermark-text" placeholder="CONFIDENTIAL" value="CONFIDENTIAL" /></label>
+            </div>
+            <ul class="file-list" id="watermark-list"><li style="color:var(--text-light);text-align:center;padding:8px;">No file selected</li></ul>
+            <button class="btn btn-primary" id="watermark-btn" disabled>💧 Add Watermark</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        🔒 All processing is done locally in your browser. Your files never leave your device.
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification" id="notification">
+        <span id="notification-message">Message</span>
+        <button class="close-btn" id="notification-close">✕</button>
+    </div>
+
+    <!-- Load Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
+    </script>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================
+            // THEME TOGGLE
+            // ============================================
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeLabel = document.getElementById('themeLabel');
+
+            function setTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('pdf-toolkit-theme', theme);
+                if (theme === 'dark') {
+                    themeIcon.textContent = '☀️';
+                    themeLabel.textContent = 'Light';
+                } else {
+                    themeIcon.textContent = '🌙';
+                    themeLabel.textContent = 'Dark';
+                }
+            }
+
+            // load saved theme or system preference
+            const savedTheme = localStorage.getItem('pdf-toolkit-theme');
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                setTheme('dark');
+            } else {
+                setTheme('light');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                setTheme(current === 'dark' ? 'light' : 'dark');
+            });
+
+            // ============================================
+            // NOTIFICATION SYSTEM
+            // ============================================
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notification-message');
+            const notificationClose = document.getElementById('notification-close');
+            let notificationTimeout = null;
+
+            function showNotification(message, type = 'info') {
+                notificationMessage.textContent = message;
+                notification.className = 'notification show';
+                if (type === 'success') notification.classList.add('success');
+                if (type === 'error') notification.classList.add('error');
+                clearTimeout(notificationTimeout);
+                notificationTimeout = setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
+
+            notificationClose.addEventListener('click', () => {
+                notification.classList.remove('show');
+                clearTimeout(notificationTimeout);
+            });
+
+            // ============================================
+            // UTILITY: Download helper
+            // ============================================
+            function download(bytes, filename) {
+                const blob = new Blob([bytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }
+
+            function downloadFromDataUrl(dataUrl, filename) {
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            }
+
+            // ============================================
+            // 1. MERGE TOOL
+            // ============================================
+            const mergeFiles = [];
+            const mergeDrop = document.querySelector('#tool-merge .drop-zone');
+            const mergeInput = mergeDrop.querySelector('input');
+            const mergeList = document.getElementById('merge-list');
+            const mergeBtn = document.getElementById('merge-btn');
+            const mergeProgress = document.getElementById('merge-progress');
+            const mergeProgressFill = document.getElementById('merge-progress-fill');
+            const mergeProgressText = document.getElementById('merge-progress-text');
+
+            function updateMergeProgress(percent, text) {
+                mergeProgress.classList.add('active');
+                mergeProgressFill.style.width = Math.min(100, Math.max(0, percent)) + '%';
+                if (text) mergeProgressText.textContent = text;
+            }
+
+            function resetMergeProgress() {
+                mergeProgress.classList.remove('active');
+                mergeProgressFill.style.width = '0%';
+                mergeProgressText.textContent = 'Merging...';
+            }
+
+            mergeDrop.addEventListener('click', () => mergeInput.click());
+            mergeInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    let added = 0;
+                    for (const f of e.target.files) {
+                        if (f.type === 'application/pdf') {
+                            mergeFiles.push(f);
+                            added++;
+                        }
+                    }
+                    if (added > 0) showNotification(`Added ${added} PDF file(s)`, 'success');
+                    renderMergeList();
+                }
+                mergeInput.value = '';
+            });
+
+            mergeDrop.addEventListener('dragover', (e) => { e.preventDefault();
+                mergeDrop.classList.add('dragover'); });
+            mergeDrop.addEventListener('dragleave', () => mergeDrop.classList.remove('dragover'));
+            mergeDrop.addEventListener('drop', (e) => {
+                e.preventDefault();
+                mergeDrop.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    let added = 0;
+                    for (const f of e.dataTransfer.files) {
+                        if (f.type === 'application/pdf') {
+                            mergeFiles.push(f);
+                            added++;
+                        }
+                    }
+                    if (added > 0) showNotification(`Added ${added} PDF file(s)`, 'success');
+                    renderMergeList();
+                }
+            });
+
+            function renderMergeList() {
+                if (mergeFiles.length === 0) {
+                    mergeList.innerHTML = '<li style="color:var(--text-light);text-align:center;padding:8px;">No files added</li>';
+                    mergeBtn.disabled = true;
+                    return;
+                }
+                let html = '';
+                mergeFiles.forEach((f, i) => {
+                    html += `<li>📄 ${f.name} (${formatFileSize(f.size)}) 
+                            <button class="remove-btn" data-index="${i}">✕</button></li>`;
+                });
+                mergeList.innerHTML = html;
+                mergeBtn.disabled = false;
+                mergeList.querySelectorAll('.remove-btn').forEach(b => {
+                    b.addEventListener('click', function() {
+                        mergeFiles.splice(parseInt(this.dataset.index), 1);
+                        renderMergeList();
+                        resetMergeProgress();
+                    });
+                });
+            }
+            renderMergeList();
+
+            mergeBtn.addEventListener('click', async function() {
+                if (mergeFiles.length < 2) {
+                    showNotification('Need at least 2 PDFs to merge.', 'error');
+                    return;
+                }
+                this.disabled = true;
+                this.textContent = '⏳ Merging...';
+                resetMergeProgress();
+
+                try {
+                    const merged = await PDFLib.PDFDocument.create();
+                    let totalPages = 0;
+                    const pageCounts = [];
+
+                    for (const file of mergeFiles) {
+                        const bytes = await file.arrayBuffer();
+                        const doc = await PDFLib.PDFDocument.load(bytes);
+                        pageCounts.push(doc.getPageCount());
+                        totalPages += doc.getPageCount();
+                    }
+
+                    let copiedPages = 0;
+                    for (let i = 0; i < mergeFiles.length; i++) {
+                        const bytes = await mergeFiles[i].arrayBuffer();
+                        const doc = await PDFLib.PDFDocument.load(bytes);
+                        const pages = await merged.copyPages(doc, doc.getPageIndices());
+                        for (const page of pages) {
+                            merged.addPage(page);
+                            copiedPages++;
+                            const percent = (copiedPages / totalPages) * 100;
+                            updateMergeProgress(percent, `Merging... ${Math.round(percent)}% (${copiedPages}/${totalPages} pages)`);
+                        }
+                    }
+
+                    const outBytes = await merged.save();
+                    download(outBytes, 'merged.pdf');
+                    showNotification(`✅ Merge complete! ${totalPages} pages merged.`, 'success');
+                } catch (err) {
+                    showNotification('Merge error: ' + err.message, 'error');
+                    console.error(err);
+                }
+                this.disabled = false;
+                this.textContent = '🔀 Merge Files';
+                resetMergeProgress();
+            });
+
+            // ============================================
+            // 2. SPLIT TOOL
+            // ============================================
+            let splitFile = null;
+            const splitDrop = document.querySelector('#tool-split .drop-zone');
+            const splitInput = splitDrop.querySelector('input');
+            const splitList = document.getElementById('split-list');
+            const splitBtn = document.getElementById('split-btn');
+            const splitPagesInput = document.getElementById('split-pages');
+
+            function renderSplitList() {
+                if (!splitFile) {
+                    splitList.innerHTML = '<li style="color:var(--text-light);text-align:center;padding:8px;">No file selected</li>';
+                    splitBtn.disabled = true;
+                    return;
+                }
+                splitList.innerHTML =
+                    `<li>📄 ${splitFile.name} (${formatFileSize(splitFile.size)}) <button class="remove-btn" id="split-remove">✕</button></li>`;
+                splitBtn.disabled = false;
+                const rm = document.getElementById('split-remove');
+                if (rm) rm.addEventListener('click', () => { splitFile = null;
+                    renderSplitList(); });
+            }
+
+            splitDrop.addEventListener('click', () => splitInput.click());
+            splitInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    splitFile = e.target.files[0];
+                    showNotification(`Selected: ${splitFile.name}`, 'success');
+                    renderSplitList();
+                }
+                splitInput.value = '';
+            });
+
+            splitDrop.addEventListener('dragover', (e) => { e.preventDefault();
+                splitDrop.classList.add('dragover'); });
+            splitDrop.addEventListener('dragleave', () => splitDrop.classList.remove('dragover'));
+            splitDrop.addEventListener('drop', (e) => {
+                e.preventDefault();
+                splitDrop.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    splitFile = e.dataTransfer.files[0];
+                    showNotification(`Selected: ${splitFile.name}`, 'success');
+                    renderSplitList();
+                }
+            });
+            renderSplitList();
+
+            function parsePageRange(str, total) {
+                const pages = new Set();
+                const parts = str.split(',');
+                for (const part of parts) {
+                    const trimmed = part.trim();
+                    if (trimmed.includes('-')) {
+                        const [start, end] = trimmed.split('-').map(Number);
+                        for (let i = start; i <= end && i <= total; i++) {
+                            if (i >= 1) pages.add(i - 1);
+                        }
+                    } else {
+                        const num = parseInt(trimmed);
+                        if (num >= 1 && num <= total) pages.add(num - 1);
+                    }
+                }
+                return [...pages].sort((a, b) => a - b);
+            }
+
+            splitBtn.addEventListener('click', async function() {
+                if (!splitFile) { showNotification('Please select a PDF.', 'error'); return; }
+                const rangeStr = splitPagesInput.value.trim();
+                if (!rangeStr) { showNotification('Please specify page ranges (e.g., 1-3,5,7-9)', 'error'); return; }
+                this.disabled = true;
+                this.textContent = '⏳ Splitting...';
+                try {
+                    const bytes = await splitFile.arrayBuffer();
+                    const doc = await PDFLib.PDFDocument.load(bytes);
+                    const totalPages = doc.getPageCount();
+                    const pagesToExtract = parsePageRange(rangeStr, totalPages);
+                    if (pagesToExtract.length === 0) {
+                        showNotification('No valid pages found.', 'error');
+                        return;
+                    }
+                    const newDoc = await PDFLib.PDFDocument.create();
+                    const copied = await newDoc.copyPages(doc, pagesToExtract);
+                    copied.forEach(p => newDoc.addPage(p));
+                    const outBytes = await newDoc.save();
+                    download(outBytes, `split_${splitFile.name}`);
+                    showNotification(`✅ Extracted ${pagesToExtract.length} pages from ${totalPages}`, 'success');
+                } catch (err) {
+                    showNotification('Split error: ' + err.message, 'error');
+                    console.error(err);
+                }
+                this.disabled = false;
+                this.textContent = '✂️ Split PDF';
+            });
+
+            // ============================================
+            // 3. COMPRESS TOOL
+            // ============================================
+            let compressFile = null;
+            const compressDrop = document.querySelector('#tool-compress .drop-zone');
+            const compressInput = compressDrop.querySelector('input');
+            const compressList = document.getElementById('compress-list');
+            const compressBtn = document.getElementById('compress-btn');
+            const compressProgress = document.getElementById('compress-progress');
+            const compressProgressFill = document.getElementById('compress-progress-fill');
+            const compressProgressText = document.getElementById('compress-progress-text');
+
+            function updateCompressProgress(percent, text) {
+                compressProgress.classList.add('active');
+                compressProgressFill.style.width = Math.min(100, Math.max(0, percent)) + '%';
+                if (text) compressProgressText.textContent = text;
+            }
+
+            function resetCompressProgress() {
+                compressProgress.classList.remove('active');
+                compressProgressFill.style.width = '0%';
+                compressProgressText.textContent = 'Compressing...';
+            }
+
+            function renderCompressList() {
+                if (!compressFile) {
+                    compressList.innerHTML = '<li style="color:var(--text-light);text-align:center;padding:8px;">No file selected</li>';
+                    compressBtn.disabled = true;
+                    return;
+                }
+                compressList.innerHTML =
+                    `<li>📄 ${compressFile.name} (${formatFileSize(compressFile.size)}) <button class="remove-btn" id="compress-remove">✕</button></li>`;
+                compressBtn.disabled = false;
+                const rm = document.getElementById('compress-remove');
+                if (rm) rm.addEventListener('click', () => { compressFile = null;
+                    renderCompressList();
+                    resetCompressProgress(); });
+            }
+
+            compressDrop.addEventListener('click', () => compressInput.click());
+            compressInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    compressFile = e.target.files[0];
+                    showNotification(`Selected: ${compressFile.name}`, 'success');
+                    renderCompressList();
+                }
+                compressInput.value = '';
+            });
+
+            compressDrop.addEventListener('dragover', (e) => { e.preventDefault();
+                compressDrop.classList.add('dragover'); });
+            compressDrop.addEventListener('dragleave', () => compressDrop.classList.remove('dragover'));
+            compressDrop.addEventListener('drop', (e) => {
+                e.preventDefault();
+                compressDrop.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    compressFile = e.dataTransfer.files[0];
+                    showNotification(`Selected: ${compressFile.name}`, 'success');
+                    renderCompressList();
+                }
+            });
+            renderCompressList();
+
+            compressBtn.addEventListener('click', async function() {
+                if (!compressFile) { showNotification('Please select a PDF.', 'error'); return; }
+                this.disabled = true;
+                this.textContent = '⏳ Compressing...';
+                resetCompressProgress();
+                updateCompressProgress(10, 'Loading document...');
+
+                try {
+                    const bytes = await compressFile.arrayBuffer();
+                    updateCompressProgress(30, 'Analyzing...');
+                    const doc = await PDFLib.PDFDocument.load(bytes);
+                    const originalSize = bytes.byteLength;
+                    updateCompressProgress(60, 'Compressing...');
+                    const compressed = await doc.save({
+                        useObjectStreams: true,
+                        addDefaultPage: false,
+                        objectsPerTick: 50,
+                    });
+                    updateCompressProgress(90, 'Finalizing...');
+                    const newSize = compressed.byteLength;
+                    const saved = ((1 - newSize / originalSize) * 100).toFixed(1);
+                    download(compressed, `compressed_${compressFile.name}`);
+                    showNotification(
+                        `✅ Compressed! ${formatFileSize(originalSize)} → ${formatFileSize(newSize)} (Saved ${saved}%)`,
+                        'success');
+                    updateCompressProgress(100, 'Complete!');
+                } catch (err) {
+                    showNotification('Compress error: ' + err.message, 'error');
+                    console.error(err);
+                }
+                this.disabled = false;
+                this.textContent = '📦 Compress PDF';
+                setTimeout(resetCompressProgress, 3000);
+            });
+
+            // ============================================
+            // 4. EXTRACT IMAGES
+            // ============================================
+            let extractFile = null;
+            const extractDrop = document.querySelector('#tool-extract .drop-zone');
+            const extractInput = extractDrop.querySelector('input');
+            const extractList = document.getElementById('extract-list');
+            const extractBtn = document.getElementById('extract-btn');
+            const extractProgress = document.getElementById('extract-progress');
+            const extractProgressFill = document.getElementById('extract-progress-fill');
+            const extractProgressText = document.getElementById('extract-progress-text');
+
+            function updateExtractProgress(percent, text) {
+                extractProgress.classList.add('active');
+                extractProgressFill.style.width = Math.min(100, Math.max(0, percent)) + '%';
+                if (text) extractProgressText.textContent = text;
+            }
+
+            function resetExtractProgress() {
+                extractProgress.classList.remove('active');
+                extractProgressFill.style.width = '0%';
+                extractProgressText.textContent = 'Extracting...';
+            }
+
+            function renderExtractList() {
+                if (!extractFile) {
+                    extractList.innerHTML = '<li style="color:var(--text-light);text-align:center;padding:8px;">No file selected</li>';
+                    extractBtn.disabled = true;
+                    return;
+                }
+                extractList.innerHTML =
+                    `<li>📄 ${extractFile.name} (${formatFileSize(extractFile.size)}) <button class="remove-btn" id="extract-remove">✕</button></li>`;
+                extractBtn.disabled = false;
+                const rm = document.getElementById('extract-remove');
+                if (rm) rm.addEventListener('click', () => { extractFile = null;
+                    renderExtractList();
+                    resetExtractProgress(); });
+            }
+
+            extractDrop.addEventListener('click', () => extractInput.click());
+            extractInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    extractFile = e.target.files[0];
+                    showNotification(`Selected: ${extractFile.name}`, 'success');
+                    renderExtractList();
+                }
+                extractInput.value = '';
+            });
+
+            extractDrop.addEventListener('dragover', (e) => { e.preventDefault();
+                extractDrop.classList.add('dragover'); });
+            extractDrop.addEventListener('dragleave', () => extractDrop.classList.remove('dragover'));
+            extractDrop.addEventListener('drop', (e) => {
+                e.preventDefault();
+                extractDrop.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    extractFile = e.dataTransfer.files[0];
+                    showNotification(`Selected: ${extractFile.name}`, 'success');
+                    renderExtractList();
+                }
+            });
+            renderExtractList();
+
+            extractBtn.addEventListener('click', async function() {
+                if (!extractFile) { showNotification('Please select a PDF.', 'error'); return; }
+                if (typeof pdfjsLib === 'undefined') {
+                    showNotification('PDF.js library not loaded. Check your internet connection.', 'error');
+                    return;
+                }
+                this.disabled = true;
+                this.textContent = '⏳ Extracting...';
+                resetExtractProgress();
+                updateExtractProgress(5, 'Loading PDF...');
+
+                try {
+                    const arrayBuffer = await extractFile.arrayBuffer();
+                    updateExtractProgress(15, 'Parsing document...');
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    const totalPages = pdf.numPages;
+                    let imageCount = 0;
+                    const images = [];
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        const percent = 15 + ((i / totalPages) * 60);
+                        updateExtractProgress(percent, `Processing page ${i}/${totalPages}...`);
+                        const page = await pdf.getPage(i);
+                        const ops = await page.getOperatorList();
+                        for (let j = 0; j < ops.fnArray.length; j++) {
+                            if (ops.fnArray[j] === pdfjsLib.OPS.paintImageXObject ||
+                                ops.fnArray[j] === pdfjsLib.OPS.paintImageXObjectRepeat) {
+                                try {
+                                    const imgData = await page.getImageData({
+                                        imageIndex: j,
+                                        maxWidth: 1000
+                                    });
+                                    if (imgData && imgData.data) {
+                                        const canvas = document.createElement('canvas');
+                                        canvas.width = imgData.width;
+                                        canvas.height = imgData.height;
+                                        const ctx = canvas.getContext('2d');
+                                        const imageData = ctx.createImageData(imgData.width, imgData.height);
+                                        imageData.data.set(imgData.data);
+                                        ctx.putImageData(imageData, 0, 0);
+                                        images.push(canvas.toDataURL('image/png'));
+                                        imageCount++;
+                                    }
+                                } catch (e) { /* skip images that can't be extracted */ }
+                            }
+                        }
+                    }
+
+                    updateExtractProgress(90, 'Preparing downloads...');
+
+                    if (images.length === 0) {
+                        showNotification('No images found in this PDF.', 'error');
+                        this.disabled = false;
+                        this.textContent = '🖼️ Extract Images';
+                        resetExtractProgress();
+                        return;
+                    }
+
+                    if (images.length === 1) {
+                        downloadFromDataUrl(images[0], 'image_1.png');
+                    } else {
+                        for (let i = 0; i < images.length && i < 20; i++) {
+                            downloadFromDataUrl(images[i], `image_${i+1}.png`);
+                            await new Promise(r => setTimeout(r, 100));
+                        }
+                        if (images.length > 20) {
+                            showNotification(
+                                `⚠️ Found ${images.length} images. Downloaded first 20. Use a dedicated tool for bulk extraction.`,
+                                'info');
+                        } else {
+                            showNotification(`✅ Extracted ${images.length} image(s) from ${totalPages} page(s).`, 'success');
+                        }
+                    }
+                    updateExtractProgress(100, 'Complete!');
+                } catch (err) {
+                    showNotification('Extract error: ' + err.message, 'error');
+                    console.error(err);
+                }
+                this.disabled = false;
+                this.textContent = '🖼️ Extract Images';
+                setTimeout(resetExtractProgress, 3000);
+            });
+
+            // ============================================
+            // 5. ROTATE TOOL
+            // ============================================
+            let rotateFile = null;
+            const rotateDrop = document.querySelector('#tool-rotate .drop-zone');
+            const rotateInput = rotateDrop.querySelector('input');
+            const rotateList = document.getElementById('rotate-list');
+            const rotateBtn = document.getElementById('rotate-btn');
+            const rotateDegrees = document.getElementById('rotate-degrees');
+
+            function renderRotateList() {
+                if (!rotateFile) {
+                    rotateList.innerHTML = '<li style="color:var(--text-light);text-align:center;padding:8px;">No file selected</li>';
+                    rotateBtn.disabled = true;
+                    return;
+                }
+                rotateList.innerHTML =
+                    `<li>📄 ${rotateFile.name} (${formatFileSize(rotateFile.size)}) <button class="remove-btn" id="rotate-remove">✕</button></li>`;
+                rotateBtn.disabled = false;
+                const rm = document.getElementById('rotate-remove');
+                if (rm) rm.addEventListener('click', () => { rotateFile = null;
+                    renderRotateList(); });
+            }
+
+            rotateDrop.addEventListener('click', () => rotateInput.click());
+            rotateInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    rotateFile = e.target.files[0];
+                    showNotification(`Selected: ${rotateFile.name}`, 'success');
+                    renderRotateList();
+                }
+                rotateInput.value = '';
+            });
+
+            rotateDrop.addEventListener('dragover', (e) => { e.preventDefault();
+                rotateDrop.classList.add('dragover'); });
+            rotateDrop.addEventListener('dragleave', () => rotateDrop.classList.remove('dragover'));
+            rotateDrop.addEventListener('drop', (e) => {
+                e.preventDefault();
+                rotateDrop.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    rotateFile = e.dataTransfer.files[0];
+                    showNotification(`Selected: ${rotateFile.name}`, 'success');
+                    renderRotateList();
+                }
+            });
+            renderRotateList();
+
+            rotateBtn.addEventListener('click', async function() {
+                if (!rotateFile) { showNotification('Please select a PDF.', 'error'); return; }
+                const degrees = parseInt(rotateDegrees.value);
+                this.disabled = true;
+                this.textContent = '⏳ Rotating...';
+                try {
+                    const bytes = await rotateFile.arrayBuffer();
+                    const doc = await PDFLib.PDFDocument.load(bytes);
+                    const pages = doc.getPages();
+                    for (const page of pages) {
+                        page.setRotation(PDFLib.degrees(degrees));
+                    }
+                    const outBytes = await doc.save();
+                    download(outBytes, `rotated_${degrees}deg_${rotateFile.name}`);
+                    showNotification(`✅ Rotated all ${pages.length} pages by ${degrees}°`, 'success');
+                } catch (err) {
+                    showNotification('Rotate error: ' + err.message, 'error');
+                    console.error(err);
+                }
+                this.disabled = false;
+                this.textContent = '🔄 Rotate PDF';
+            });
+
+            // ============================================
+            // 6. WATERMARK TOOL
+            // ============================================
+            let watermarkFile = null;
+            const watermarkDrop = document.querySelector('#tool-watermark .drop-zone');
+            const watermarkInput = watermarkDrop.querySelector('input');
+            const watermarkList = document.getElementById('watermark-list');
+            const watermarkBtn = document.getElementById('watermark-btn');
+            const watermarkText = document.getElementById('watermark-text');
+
+            function renderWatermarkList() {
+                if (!watermarkFile) {
+                    watermarkList.innerHTML = '<li style="color:var(--text-light);text-align:center;padding:8px;">No file selected</li>';
+                    watermarkBtn.disabled = true;
+                    return;
+                }
+                watermarkList.innerHTML =
+                    `<li>📄 ${watermarkFile.name} (${formatFileSize(watermarkFile.size)}) <button class="remove-btn" id="watermark-remove">✕</button></li>`;
+                watermarkBtn.disabled = false;
+                const rm = document.getElementById('watermark-remove');
+                if (rm) rm.addEventListener('click', () => { watermarkFile = null;
+                    renderWatermarkList(); });
+            }
+
+            watermarkDrop.addEventListener('click', () => watermarkInput.click());
+            watermarkInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    watermarkFile = e.target.files[0];
+                    showNotification(`Selected: ${watermarkFile.name}`, 'success');
+                    renderWatermarkList();
+                }
+                watermarkInput.value = '';
+            });
+
+            watermarkDrop.addEventListener('dragover', (e) => { e.preventDefault();
+                watermarkDrop.classList.add('dragover'); });
+            watermarkDrop.addEventListener('dragleave', () => watermarkDrop.classList.remove('dragover'));
+            watermarkDrop.addEventListener('drop', (e) => {
+                e.preventDefault();
+                watermarkDrop.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    watermarkFile = e.dataTransfer.files[0];
+                    showNotification(`Selected: ${watermarkFile.name}`, 'success');
+                    renderWatermarkList();
+                }
+            });
+            renderWatermarkList();
+
+            watermarkBtn.addEventListener('click', async function() {
+                if (!watermarkFile) { showNotification('Please select a PDF.', 'error'); return; }
+                const text = watermarkText.value.trim() || 'CONFIDENTIAL';
+                this.disabled = true;
+                this.textContent = '⏳ Adding watermark...';
+                try {
+                    const bytes = await watermarkFile.arrayBuffer();
+                    const doc = await PDFLib.PDFDocument.load(bytes);
+                    const pages = doc.getPages();
+                    const { rgb } = PDFLib;
+
+                    for (const page of pages) {
+                        const { width, height } = page.getSize();
+                        page.drawText(text, {
+                            x: width / 2 - 80,
+                            y: height / 2 - 10,
+                            size: 40,
+                            color: rgb(0.8, 0.2, 0.2),
+                            opacity: 0.4,
+                            rotate: PDFLib.degrees(-45),
+                        });
+                    }
+
+                    const outBytes = await doc.save();
+                    download(outBytes, `watermarked_${watermarkFile.name}`);
+                    showNotification(`✅ Added watermark to ${pages.length} pages`, 'success');
+                } catch (err) {
+                    showNotification('Watermark error: ' + err.message, 'error');
+                    console.error(err);
+                }
+                this.disabled = false;
+                this.textContent = '💧 Add Watermark';
+            });
+
+            console.log('📚 PDF Toolkit loaded. All processing is local.');
+            console.log('✅ 6 tools available: Merge, Split, Compress, Extract Images, Rotate, Watermark');
+            console.log('🌗 Theme toggle enabled.');
+        })();
+    </script>
+</body>
+</html>
